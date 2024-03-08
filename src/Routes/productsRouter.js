@@ -1,54 +1,54 @@
 import { Router } from 'express';
 import ProductManager from '../manager/productManager.js';
+import CartManager from '../manager/cartManager.js';
 
-export const productRouter=Router()
+export const productsRouter = (productManager) => {
+    const router = Router();
 
-const productsFile='productos.json';
-const manager = new ProductManager(productsFile);
+    router.get('/',(req,res)=>{
+        const products = productManager.getProduct();
+        res.status(200).json(products);
+    });
 
-productRouter.get('/',(req,res)=>{
-    const products= manager.getProduct();
-    res.status(200).json(products);
-})
+    router.get('/', (req, res) => {
+        const { limit, skip } = req.query;
 
-productRouter.get('/', (req, res) => {
-    const { limit, skip } = req.query;
+        let resultado = productManager.getProduct(); 
 
-    let resultado = manager.getProduct(); 
+        if (skip && skip > 0) {
+            resultado = resultado.slice(skip); 
+        }
 
-    if (skip && skip > 0) {
-        resultado = resultado.slice(skip); 
-    }
+        if (limit && limit > 0) {
+            resultado = resultado.slice(0, limit);
+        }
 
-    if (limit && limit > 0) {
-        resultado = resultado.slice(0, limit);
-    }
+        res.json(resultado);
+    });
 
-    res.json(resultado);
-});
+    router.get('/:id', (req, res) => {
+        const productId = parseInt(req.params.id);
+        const producto = productManager.getProductById(productId);
+        if (producto) {
+            res.json(producto);
+        } else {
+            res.status(404).send('Error 404. Producto no encontrado');
+        }
+    });
 
-productRouter.get('/:id', (req, res) => {
-    const productId = parseInt(req.params.id);
-    const producto = manager.getProductById(productId);
-    if (producto) {
-        res.json(producto);
-    } else {
-        res.status(404).send('Error 404. Producto no encontrado');
-    }
-});
+    router.post('/', (req, res) => {
+        const { nombre, descripcion, precio = 0, thumbnail, code, stock = 0 } = req.body;
 
-productRouter.post('/', (req, res) => {
-    const { nombre, descripcion, precio = 0, thumbnail, code, stock = 0 } = req.body;
+        if (!nombre || !descripcion || precio === undefined || !thumbnail || !code || stock === undefined) {
+            return res.status(400).json({ error: 'Por favor complete todos los datos del producto' });
+        }
 
-    if (!nombre || !descripcion || precio === undefined || !thumbnail || !code || stock === undefined) {
-        return res.status(400).json({ error: 'Por favor complete todos los datos del producto' });
-    }
+        const newProduct = productManager.addProduct(nombre, descripcion, precio, thumbnail, code, stock);
 
-    const newProduct = manager.addProduct(nombre, descripcion, precio, thumbnail, code, stock);
+        return res.status(201).json(newProduct);
+    });
 
-    return res.status(201).json(newProduct);
-});
+    return router;
+}
 
-
-
-export default productRouter;
+export default productsRouter;

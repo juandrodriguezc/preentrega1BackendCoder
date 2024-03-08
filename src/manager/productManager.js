@@ -4,7 +4,7 @@ class ProductManager {
     constructor(productsFile) {
         this.products = [];
         this.productsFile = productsFile;
-        this.loadProductsFromFile(); // Cargar productos desde el archivo al instanciar ProductManager
+        this.loadProductsFromFile();
     }
 
     loadProductsFromFile() {
@@ -52,6 +52,7 @@ getProductById(id) {
     }
 }
 
+//Actualizar el producto
 updateProduct(id, NuevaInfo) {
     const index = this.products.findIndex(product => product.id === id);
     if (index !== -1) {
@@ -68,6 +69,8 @@ updateProduct(id, NuevaInfo) {
         return false;
     }
 }
+
+//Para eliminar un producto
 deleteProduct(id) {
     const initialLength = this.products.length;
     this.products = this.products.filter(product => product.id !== id);

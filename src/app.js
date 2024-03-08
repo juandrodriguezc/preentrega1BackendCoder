@@ -1,15 +1,17 @@
+//imports
 import express from "express";
 import productsRouter from "./Routes/productsRouter.js"
 import cartsRouter from "./Routes/cartsRouter.js"
-
+import ProductManager from "./manager/productManager.js"; 
 const PORT = 8080;
 const app = express();
+const productManager = new ProductManager('productos.json'); 
 
 app.use(express.json());
 
-app.use("/api/products", productsRouter)
-app.use("/api/carts", cartsRouter)
-
+//Agregando los routers al app
+app.use("/api/products", productsRouter(productManager));
+app.use("/api/carts", cartsRouter(productManager));
 
 app.get('/', (req, res) => {
     res.send('Servidor con Express');
@@ -22,5 +24,3 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);
 });
-
-
