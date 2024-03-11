@@ -1,11 +1,12 @@
 import { Router } from "express";
 import CartManager from "../manager/cartManager.js";
 import ProductManager from "../manager/productManager.js";
+import { rutaCarrito } from "../utils.js";
 
 export const cartsRouter = (productManager) => {
     const router = Router();
-    const cartFile='carts.json'
-    const cartManager=new CartManager(cartFile);
+    const cartManager=new CartManager(rutaCarrito);
+    
 
     router.get('/', (req, res) => {
         const carts = cartManager.getCarts();
@@ -30,17 +31,24 @@ export const cartsRouter = (productManager) => {
     router.post('/:id/products/:productId', (req, res) => {
         const cartId = parseInt(req.params.id);
         const productId = req.params.productId;
+        console.log('productId');
+        
 
         const productToAdd = productManager.getProductById(productId); 
 
         if (productToAdd) {
             cartManager.addProductToCart(cartId, productToAdd);
-            res.send('Producto agregado al carrito correctamente');
+            const cart = cartManager.getCartById(cartId);
+            
+            if (cart) {
+                res.status(200).json(cart); // Devuelve el carrito actualizado como respuesta
+            } else {
+                res.status(404).send('Error 404. Carrito no encontrado');
+            }
         } else {
             res.status(404).send('Error 404. Producto no encontrado');
         }
     });
-
     return router;
 }
 

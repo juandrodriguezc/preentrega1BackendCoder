@@ -3,9 +3,10 @@ import express from "express";
 import productsRouter from "./Routes/productsRouter.js"
 import cartsRouter from "./Routes/cartsRouter.js"
 import ProductManager from "./manager/productManager.js"; 
+import { rutaProductos } from "./utils.js";
 const PORT = 8080;
 const app = express();
-const productManager = new ProductManager('productos.json'); 
+const productManager = new ProductManager(rutaProductos) 
 
 app.use(express.json());
 
@@ -20,6 +21,8 @@ app.get('/', (req, res) => {
 app.get('*', (req, res) => {
     res.status(404).send('Error. 404 Not Found');
 });
+
+
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);

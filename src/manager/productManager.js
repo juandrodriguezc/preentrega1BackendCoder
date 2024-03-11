@@ -1,19 +1,21 @@
 import fs from 'fs';
+import path from 'path';
+import { rutaProductos } from '../utils.js';
     
 class ProductManager {
-    constructor(productsFile) {
-        this.products = [];
-        this.productsFile = productsFile;
-        this.loadProductsFromFile();
+    constructor(rutaProductos) {
+        this.rutaProductos = rutaProductos;
+        this.products= this.loadProductsFromFile(); // Cargar productos desde el archivo al instanciar ProductManager
     }
 
     loadProductsFromFile() {
         try {
-            const data = fs.readFileSync(this.productsFile, 'utf8');
-            this.products = JSON.parse(data);
+            const data = fs.readFileSync(this.rutaProductos, 'utf8');
             console.log('Productos cargados correctamente desde el archivo.');
+            return JSON.parse(data);
         } catch (err) {
             console.error('Error al cargar productos desde el archivo:', err);
+            return [];
         }
     }
 
@@ -27,16 +29,12 @@ addProduct(nombre, descripcion, precio = 0, thumbnail, code, stock = 0) {
         console.log(" Por favor complete todos los datos");
         return; 
     }
-    //Para agregar el ID que se autoincremente
-    let id = 1; 
     
-    if (this.products.length > 0) {
-        id = this.products[this.products.length - 1].id + 1;
-    }
-    
+    const id = this.idUnico();
     //Variable para agregar los productos
     const newProduct = {id, nombre, descripcion, precio, thumbnail, code, stock};
     this.products.push(newProduct);
+    this.saveProducts();
     console.log('Producto agregado:', newProduct);
 
     return newProduct;
@@ -52,6 +50,20 @@ getProductById(id) {
     }
 }
 
+idUnico(){
+//Para agregar el ID que se autoincremente
+let id = 1; 
+    
+if (this.products.length > 0) {
+    id = this.products[this.products.length - 1].id + 1;
+}
+return id;
+}
+
+saveProducts(){
+    fs.writeFileSync(this.rutaProductos, JSON.stringify(this.products, null, 2));
+}
+
 //Actualizar el producto
 updateProduct(id, NuevaInfo) {
     const index = this.products.findIndex(product => product.id === id);
@@ -63,6 +75,7 @@ updateProduct(id, NuevaInfo) {
         
         this.products[index] = updatedProduct;
         console.log("Producto actualizado correctamente");
+        // this.saveProducts();
         return true;
     } else {
         console.log("No se pudo actualizar, ya que el producto no se encontró");
@@ -78,16 +91,17 @@ deleteProduct(id) {
         console.log("Error: Producto no encontrado");
     } else {
         console.log("Producto eliminado correctamente");
+        this.saveProducts();
     }
 }
 }
 //Creando los productos
-const manager = new ProductManager('productos.json');
+const manager = new ProductManager(rutaProductos);
 
-manager.addProduct('Pizza', '2x1 Todos los Lunes y Martes', 200, 'thumbnail1.jpg', 'code1', 100);
-manager.addProduct('Rolls', '3x2 Todos los Miercoles y Jueves', 100, 'thumbnail2.jpg', 'code2', 200 );
+// manager.addProduct('Pizza', '2x1 Todos los Lunes y Martes', 200, 'thumbnail1.jpg', 'code1', 100);
+// manager.addProduct('Rolls', '3x2 Todos los Miercoles y Jueves', 100, 'thumbnail2.jpg', 'code2', 200 );
 
-manager.addProduct('Descuentos', '2x1 Todos los Lunes y Martes', 200, 'thumbnail1.jpg', 'code1', 100);
+// manager.addProduct('Descuentos', '2x1 Todos los Lunes y Martes', 200, 'thumbnail1.jpg', 'code1', 100);
 
 
 const products = manager.getProduct();
