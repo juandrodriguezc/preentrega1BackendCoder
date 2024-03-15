@@ -41,7 +41,7 @@ addProduct(nombre, descripcion, precio = 0, thumbnail, code, stock = 0) {
     
 }
 getProductById(id) {
-    const product = this.products.find(product => product.id === id);
+    const product = this.products.find(product => product.id === parseInt(id));
     if (product) {
         return product;
     } else {
@@ -66,7 +66,7 @@ saveProducts(){
 
 //Actualizar el producto
 updateProduct(id, NuevaInfo) {
-    const index = this.products.findIndex(product => product.id === id);
+    const index = this.products.findIndex(product => product.id == id);
     if (index !== -1) {
         
         const updatedProduct = { ...this.products[index], ...NuevaInfo };

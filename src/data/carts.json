@@ -1,10 +1,20 @@
 [
-    {
+  {
     "id": 1,
-    "products": []
-    },
-    {
+    "products": [
+      {
+        "id": 2,
+        "nombre": "Rolls",
+        "descripcion": "3x2 Todos los Miercoles y Jueves",
+        "precio": 100,
+        "thumbnail": "thumbnail2.jpg",
+        "code": "code2",
+        "stock": 200
+      }
+    ]
+  },
+  {
     "id": 2,
     "products": []
-    }
+  }
 ]
